@@ -1,0 +1,15 @@
+{
+  "terminal.integrated.env.osx": {
+    "SFDX_SET_CLIENT_IDS": "sfdx-vscode"
+  },
+  "terminal.integrated.env.linux": {
+    "SFDX_SET_CLIENT_IDS": "sfdx-vscode"
+  },
+  "terminal.integrated.env.windows": {
+    "SFDX_SET_CLIENT_IDS": "sfdx-vscode"
+  },
+  "cSpell.words": [
+    "trello",
+    "trellocode"
+  ]
+}
