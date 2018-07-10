@@ -1,4 +1,4 @@
-import * as Trello from "node-trello";
+import * as Trello from 'node-trello';
 
 export default class TrelloClient {
   private _trello: any;
@@ -8,11 +8,11 @@ export default class TrelloClient {
   public _boards: Array<any>;
   public _boardsIDs: Array<any>;
 
-  public _lists: Array<any>;
-  public _listsIDs: Array<any>;
+  public lists: Array<any>;
+  public listsIDs: Array<any>;
 
-  public _cards: Array<any>;
-  public _cardsIDs: Array<any>;
+  public cards: Array<any>;
+  public cardsIDs: Array<any>;
 
   public currentBID: string;
   public currentLID: string;
@@ -21,14 +21,14 @@ export default class TrelloClient {
   public currentCard: string;
 
   constructor(key?: string, token?: string) {
-    this._key = key || "";
-    this._token = token || "";
+    this._key = key || '';
+    this._token = token || '';
     this._boards = [];
     this._boardsIDs = [];
-    this._lists = [];
-    this._listsIDs = [];
-    this._cards = [];
-    this._cardsIDs = [];
+    this.lists = [];
+    this.listsIDs = [];
+    this.cards = [];
+    this.cardsIDs = [];
     this.currentBID = '';
     this.currentLID = '';
     this.currentCID = '';
@@ -38,12 +38,12 @@ export default class TrelloClient {
   }
 
   public testingT(): string {
-    return "Hello!";
+    return 'Hello!';
   }
 
   public getMyBoards(): Thenable<boolean> {
     return new Promise((resolve, reject) => {
-      this._trello.get("/1/members/me/boards", (err, data) => {
+      this._trello.get('/1/members/me/boards', (err, data) => {
         if (err) {
           reject(err);
         }
@@ -62,36 +62,36 @@ export default class TrelloClient {
 
   public getBoardLists(boardID: string) {
     return new Promise((resolve, reject) => {
-      this._trello.get("/1/boards/" + boardID + "/lists", (err, data) => {
+      this._trello.get('/1/boards/' + boardID + '/lists', (err, data) => {
         if (err) {
           throw err;
         }
         console.log(data);
-        this._lists = new Array<string>();
-        this._listsIDs = new Array<string>();
+        this.lists = new Array<string>();
+        this.listsIDs = new Array<string>();
 
         for (var i = 0; i < data.length; i++) {
-          this._lists.push(data[i].name);
-          this._listsIDs.push(data[i].id);
+          this.lists.push(data[i].name);
+          this.listsIDs.push(data[i].id);
         }
         resolve(true);
       });
     });
   }
   //
-  public _getAllCards(listID: string) {
+  public getAllCards(listID: string) {
     return new Promise((resolve, reject) => {
-      this._trello.get("/1/lists/" + listID + "/cards", (err, data) => {
+      this._trello.get('/1/lists/' + listID + '/cards', (err, data) => {
         if (err) {
           throw err;
         }
         console.log(data);
-        this._cards = new Array<string>();
-        this._cardsIDs = new Array<string>();
+        this.cards = new Array<string>();
+        this.cardsIDs = new Array<string>();
 
         for (var i = 0; i < data.length; i++) {
-          this._cards.push(data[i].name);
-          this._cardsIDs.push(data[i].id);
+          this.cards.push(data[i].name);
+          this.cardsIDs.push(data[i].id);
         }
         resolve(true);
       });
@@ -100,19 +100,19 @@ export default class TrelloClient {
 
   public _setCurCardID(currentCardName: string) {
     this.currentCard = currentCardName;
-    for (var i = 0; i < this._cards.length; i++) {
-      if (currentCardName === this._cards[i]) {
-        var cid = this._cardsIDs[i];
+    for (var i = 0; i < this.cards.length; i++) {
+      if (currentCardName === this.cards[i]) {
+        var cid = this.cardsIDs[i];
       }
     }
     this.currentCID = cid;
   }
 
   public _moveCurrentCardToList(newListID: string) {
-    var putString = "/1/cards/" + this.currentCID + "/";
+    var putString = '/1/cards/' + this.currentCID + '/';
 
     this._trello.put(putString, { idList: newListID }, (err, data) => {
-      console.log("currentID " + this.currentCID + " new list ID " + newListID);
+      console.log('currentID ' + this.currentCID + ' new list ID ' + newListID);
       console.log(err);
       if (err) {
         throw err;
@@ -122,7 +122,7 @@ export default class TrelloClient {
   }
 
   public _closeCard() {
-    var putString = "/1/cards/" + this.currentCID + "/";
+    var putString = '/1/cards/' + this.currentCID + '/';
 
     this._trello.put(putString, { closed: true }, (err, data) => {
       console.log(err);

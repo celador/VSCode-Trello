@@ -1,4 +1,4 @@
-import * as vscode from "vscode";
+import * as vscode from 'vscode';
 
 //This is for interacting with TrelloClient Object and VS UI
 
@@ -11,6 +11,10 @@ export var currentList: string;
 export var currentBoard: string;
 export var statusBarItem: vscode.StatusBarItem;
 
+export function displayCardOnBottom(displayString: string) {
+  AddToBar('', '', '', displayString, '$(file-text)');
+}
+
 export function ShowBoards(
   boards: string[],
   boardsID: string[]
@@ -19,15 +23,15 @@ export function ShowBoards(
     x => {
       if (x) {
       }
-      console.log("ShowBoards: " + x);
-      currentBoard = x || "";
+      console.log('ShowBoards: ' + x);
+      currentBoard = x || '';
       //go through name list and get corresponding selected ID
       for (var j = 0; j < boards.length; j++) {
         if (boards[j] === x) {
           currentBID = boardsID[j];
         }
       }
-      console.log("ShowBoards - current: " + currentBID);
+      console.log('ShowBoards - current: ' + currentBID);
       return currentBID;
     },
     err => console.log(err)
@@ -40,7 +44,7 @@ export function ShowLists(
 ): Thenable<string> {
   return vscode.window.showQuickPick(lists).then(
     x => {
-      currentList = x || "";
+      currentList = x || '';
       //find ID for selected list
       for (var j = 0; j < lists.length; j++) {
         if (lists[j] === x) {
@@ -50,7 +54,7 @@ export function ShowLists(
       }
       return currentLID;
 
-      //this._getAllCards(this.lID);
+      //this.getAllCards(this.lID);
     },
     err => {}
   );
@@ -59,8 +63,8 @@ export function ShowLists(
 export function ShowCards(cards: Array<string>, cardsID: Array<string>) {
   return vscode.window.showQuickPick(cards).then(
     x => {
-      console.log("console display:" + x);
-      currentCard = x || "";
+      console.log('console display:' + x);
+      currentCard = x || '';
       //find ID for selected list
       for (var j = 0; j < cards.length; j++) {
         if (cards[j] === x) {
@@ -86,20 +90,20 @@ export function AddToBar(
       vscode.StatusBarAlignment.Left
     );
   }
-  console.log("printing current card name " + cardName);
-  console.log("printing current list" + currentList);
-  console.log("printing current board " + currentBoard);
+  console.log('printing current card name ' + cardName);
+  console.log('printing current list' + currentList);
+  console.log('printing current board ' + currentBoard);
   statusBarItem.text = cardName
     ? iconName +
-      " " +
+      ' ' +
       message +
-      " " +
+      ' ' +
       currentBoard +
-      " $(chevron-right)" +
+      ' $(chevron-right)' +
       currentList +
-      " $(chevron-right)" +
+      ' $(chevron-right)' +
       cardName
-    : iconName + " " + message;
+    : iconName + ' ' + message;
   statusBarItem.show();
   //createStatusBarItem(alignment?: StatusBarAlignment, priority?: number): StatusBarItem
 }
@@ -120,7 +124,7 @@ export function InsertUserToken() {
     .then(
       x => {
         if (!x) {
-          return vscode.window.showErrorMessage("need to paste your token in");
+          return vscode.window.showErrorMessage('need to paste your token in');
         } else {
           return x;
         }
