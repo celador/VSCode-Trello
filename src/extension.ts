@@ -3,22 +3,21 @@
 import * as vscode from "vscode";
 import TrelloClient from "./trello";
 import * as vsInterface from "./vscodeInteractions";
-import * as open from 'open';
+import open = require("open");
 
 var trelloClient: TrelloClient;
-var token, extensionKey, currentBID, currentCID, currentLID;
 
 // TODO: Ensure that the user token is stored somewhere - and configured, so that the user
 // doesn't have to do this all the time
 const appKey = "03e153ce92addad232ddc24891e07c60";
-var _userToken = "";
+export var _userToken = "";
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
   // Use the console to output diagnostic information (console.log) and errors (console.error)
   // This line of code will only be executed once when your extension is activated
-  // console.log('Congratulations, your extension "txc" is now active!');
+  console.log('Congratulations, your extension "TrelloCode" is now active!');
 
   // The command has been defined in the package.json file
   // Now provide the implementation of the command with  registerCommand
@@ -38,8 +37,9 @@ export function activate(context: vscode.ExtensionContext) {
     "extension.getAllBoards",
     () => getACard()
   );
-  var moveCardTL = vscode.commands.registerCommand("extension.moveCardToNewList", () =>
-    moveCurCardTL()
+  var moveCardTL = vscode.commands.registerCommand(
+    "extension.moveCardToNewList",
+    () => moveCurCardTL()
   );
   var closeCurCard = vscode.commands.registerCommand(
     "extension.closeCard",
@@ -66,24 +66,24 @@ function loginTrello() {
   createClient();
 }
 
-function loginTrelloTest() {
-  createClient();
-}
+// function loginTrelloTest() {
+//   createClient();
+// }
 
 function createClient() {
   vsInterface.InsertUserToken().then(userToken => {
-    // console.log(userToken);
-    _userToken = userToken;
+    console.log(userToken);
+    _userToken = userToken || "";
     trelloClient = trelloClient || new TrelloClient(appKey, userToken);
     displayLoggedIn("Trello logged in");
   });
 }
 
-function getACardTest() {
-  _userToken = "";
-  trelloClient = trelloClient || new TrelloClient(appKey, "");
-  getACard();
-}
+// function getACardTest() {
+//   _userToken = "";
+//   trelloClient = trelloClient || new TrelloClient(appKey, "");
+//   getACard();
+// }
 
 function getACard() {
   //getBoards from TrelloAPI
@@ -103,7 +103,7 @@ function getACard() {
         );
       })
       .then(selectedBoard => {
-        currentBID = selectedBoard;
+        trelloClient.currentBID = selectedBoard;
         return trelloClient.getBoardLists(selectedBoard);
       })
       .then(() => {
@@ -113,7 +113,7 @@ function getACard() {
         );
       })
       .then(selectedList => {
-        currentLID = selectedList;
+        trelloClient.currentLID = selectedList;
         return trelloClient._getAllCards(selectedList);
       })
       .then(() => {
@@ -124,8 +124,8 @@ function getACard() {
       })
       .then(
         selectedCard => {
-          trelloClient._setCurCardID(selectedCard);
-          displayCardOnBottom(selectedCard);
+          trelloClient._setCurCardID(selectedCard || "");
+          displayCardOnBottom(selectedCard || "");
           return true;
         },
         err => {}
@@ -134,7 +134,7 @@ function getACard() {
 }
 
 function moveCurCardTL() {
-  if (!(trelloClient || trelloClient.currentCID)) {
+  if (!trelloClient.currentCID) {
     vsInterface.ShowError("You need to get a card before you try to move one.");
   } else {
     //ask user for a listName to move card || show user possible lists
