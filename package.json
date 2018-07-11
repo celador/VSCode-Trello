@@ -30,27 +30,27 @@
     "url": "https://github.com/celador/vscode-trello/issues"
   },
   "activationEvents": [
-    "onCommand:extension.loginToTrello",
-    "onCommand:extension.moveCardToNewList",
-    "onCommand:extension.getAllBoards",
-    "onCommand:extension.closeCard"
+    "onCommand:TrelloCode.loginToTrello",
+    "onCommand:TrelloCode.moveCardToNewList",
+    "onCommand:TrelloCode.getAllBoards",
+    "onCommand:TrelloCode.closeCard"
   ],
   "main": "./out/extension",
   "contributes": {
     "commands": [{
-        "command": "extension.moveCardToNewList",
+        "command": "TrelloCode.moveCardToNewList",
         "title": "Trello: Move Current Card to New List"
       },
       {
-        "command": "extension.loginToTrello",
+        "command": "TrelloCode.loginToTrello",
         "title": "Trello: Login"
       },
       {
-        "command": "extension.getAllBoards",
+        "command": "TrelloCode.getAllBoards",
         "title": "Trello: Get A Card"
       },
       {
-        "command": "extension.closeCard",
+        "command": "TrelloCode.closeCard",
         "title": "Trello: Close Current Card"
       }
     ],

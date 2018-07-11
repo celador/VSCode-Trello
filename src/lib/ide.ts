@@ -1,7 +1,5 @@
 import * as vscode from 'vscode';
 
-//This is for interacting with TrelloClient Object and VS UI
-
 export var currentBID: string;
 export var currentLID: string;
 export var currentCID: string;
@@ -11,8 +9,33 @@ export var currentList: string;
 export var currentBoard: string;
 export var statusBarItem: vscode.StatusBarItem;
 
-export const getApiKey: () => string | undefined = () =>
-  vscode.workspace.getConfiguration('TrelloCode').get('apiKey');
+const apiKeyErrorMessage =
+  'You need to add your API Key from Trello so we can verify your identity';
+
+export const getApiKey: () => Thenable<string> = () => {
+  const apiKey: string | undefined = vscode.workspace
+    .getConfiguration('TrelloCode')
+    .get('apiKey');
+
+  if (apiKey) {
+    return Promise.resolve(apiKey);
+  } else {
+    return PromptApiKey();
+  }
+};
+
+export async function PromptApiKey() {
+  const apiKey = await vscode.window.showInputBox({
+    placeHolder:
+      'Please paste in your Trello API Key from https://trello.com/app-key',
+    ignoreFocusOut: true
+  });
+  if (apiKey) {
+    return apiKey;
+  } else {
+    throw new Error(apiKeyErrorMessage);
+  }
+}
 
 export const getUserToken: () => string | undefined = () =>
   vscode.workspace.getConfiguration('TrelloCode').get('userToken');
@@ -96,9 +119,6 @@ export function AddToBar(
       vscode.StatusBarAlignment.Left
     );
   }
-  console.log('printing current card name ' + cardName);
-  console.log('printing current list' + currentList);
-  console.log('printing current board ' + currentBoard);
   statusBarItem.text = cardName
     ? iconName +
       ' ' +
@@ -111,7 +131,6 @@ export function AddToBar(
       cardName
     : iconName + ' ' + message;
   statusBarItem.show();
-  //createStatusBarItem(alignment?: StatusBarAlignment, priority?: number): StatusBarItem
 }
 
 export function AddStatusIcon(iconName: string) {
@@ -130,10 +149,13 @@ const showTokenError = () =>
 export function PromptUserToken() {
   return vscode.window
     .showInputBox({
-      placeHolder: "Please paste in your user token, then hit 'Enter'.",
+      placeHolder: 'Please paste in the User Token provided by Trello',
       ignoreFocusOut: true
     })
-    .then(x => (!x ? showTokenError() : x), console.error);
+    .then(
+      userToken => (!userToken ? showTokenError() : userToken),
+      console.error
+    );
 }
 
 export function ShowError(errMessage: string) {

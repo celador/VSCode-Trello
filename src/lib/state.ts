@@ -1,5 +1,9 @@
 import Trello from './trello';
 
 export default class State {
-  trello: Trello = new Trello();
+  constructor({ apiKey, userToken }) {
+    this.trello = new Trello(apiKey, userToken);
+  }
+
+  trello: Trello | undefined;
 }

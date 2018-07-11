@@ -3,25 +3,39 @@ import * as ide from '../lib/ide';
 import TrelloClient from '../lib/trello';
 import State from '../lib/state';
 
-export default (state: State) => () => {
-  open(
-    `https://trello.com/1/authorize?key=${ide.getApiKey()}&expiration=never&response_type=token&scope=read,write,account`
-  );
-  createClient(state);
-};
+export default (state: State) =>
+  function() {
+    ide.getApiKey().then(
+      apiKey => {
+        const userToken = ide.getUserToken();
+        if (apiKey) {
+          if (!userToken) {
+            open(
+              `https://trello.com/1/authorize?key=${apiKey}&expiration=never&response_type=token&scope=read,write,account`
+            );
+            ide.PromptUserToken().then(token => {
+              if (token) {
+                state.trello = createClient(apiKey, token);
+              } else {
+                throw new Error('Missing User Token');
+              }
+            });
+          } else {
+            state.trello = createClient(apiKey, userToken);
+          }
+        } else {
+          throw new Error('Missing API Key');
+        }
+      },
+      error => ide.ShowError(error.message)
+    );
+  };
 
-function createClient(state: State) {
-  ide.PromptUserToken().then(userToken => {
-    if (userToken) {
-      ide.setUserToken(userToken);
-      state.trello = new TrelloClient(ide.getApiKey(), userToken);
-      displayLoggedIn('Trello logged in');
-    } else {
-      ide.ShowError('No User Token')
-    }
-  });
-}
-
-function displayLoggedIn(loggedIn: string) {
-  ide.AddToBar(loggedIn, '', '', '', '$(person)');
+function createClient(apiKey: string, userToken: string) {
+  if (apiKey && userToken) {
+    ide.AddToBar('Trello logged in', '', '', '', '$(person)');
+    return new TrelloClient(apiKey, userToken);
+  } else {
+    throw new Error('Missing API Key or User Token');
+  }
 }

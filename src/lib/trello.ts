@@ -1,8 +1,9 @@
 import * as Trello from 'node-trello';
+import * as ide from '../lib/ide';
 
 export default class TrelloClient {
   private trello: any;
-  private key: string;
+  private key: string = '';
   private token: string;
 
   public boards: any[];
@@ -20,8 +21,29 @@ export default class TrelloClient {
 
   public currentCard: string;
 
-  constructor(key?: string, token?: string) {
-    this.key = key || '';
+  constructor(key: string, token: string) {
+    if (!key) {
+      ide
+        .getApiKey()
+        .then(key => (this.key = key))
+        .then(() => {
+          if (!token) {
+            return ide.getUserToken();
+          } else {
+            return token;
+          }
+        })
+        .then(token => {
+          if (token) {
+            this.token = token;
+          } else {
+            ide.ShowError('Missing User Token');
+          }
+        });
+    } else {
+      this.key = key;
+    }
+
     this.token = token || '';
     this.boards = [];
     this.boardsIDs = [];
@@ -35,6 +57,7 @@ export default class TrelloClient {
     this.currentCard = '';
 
     this.trello = new Trello(this.key, this.token);
+    ide.setUserToken(token);
   }
 
   public getMyBoards(): Promise<boolean> {

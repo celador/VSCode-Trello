@@ -9,19 +9,19 @@ import closeCard from './closeCard';
 const commands: (state: State) => vscode.Disposable[] = state =>
   [
     {
-      command: 'extension.loginToTrello',
+      command: 'TrelloCode.loginToTrello',
       callback: login(state)
     },
     {
-      command: 'extension.getAllBoards',
+      command: 'TrelloCode.getAllBoards',
       callback: getCard(state)
     },
     {
-      command: 'extension.moveCardToNewList',
+      command: 'TrelloCode.moveCardToNewList',
       callback: moveCard(state)
     },
     {
-      command: 'extension.closeCard',
+      command: 'TrelloCode.closeCard',
       callback: closeCard(state)
     }
   ].map(({ command, callback }) =>
