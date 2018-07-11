@@ -53,7 +53,23 @@
         "command": "extension.closeCard",
         "title": "Trello: Close Current Card"
       }
-    ]
+    ],
+    "configuration": {
+      "type": "object",
+      "title": "TrelloCode configuration",
+      "properties": {
+        "TrelloCode.apiKey": {
+          "type": ["string", "null"],
+          "default": null,
+          "description": "Your Trello API key from https://trello.com/app-key"
+        },
+        "TrelloCode.userToken": {
+          "type": ["string", "null"],
+          "default": null,
+          "description": "The User Token returned when logging into Trello"
+        }
+      }
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",

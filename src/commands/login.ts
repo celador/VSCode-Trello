@@ -1,30 +1,27 @@
 import open = require('open');
-import * as vsInterface from '../lib/vscodeInteractions';
+import * as ide from '../lib/ide';
 import TrelloClient from '../lib/trello';
+import State from '../lib/state';
 
-export default function loginTrello(state) {
-  //need to authenticate user
-  // Display a message box to the user
-  //vscode.window.showInformationMessage('Trying To Login');
-  return () => {
-    let authUrl =
-      'https://trello.com/1/authorize?key=' +
-      state.appKey +
-      '&expiration=never&response_type=token&scope=read,write,account';
-    open(authUrl);
-    createClient(state);
-  };
-}
+export default (state: State) => () => {
+  open(
+    `https://trello.com/1/authorize?key=${ide.getApiKey()}&expiration=never&response_type=token&scope=read,write,account`
+  );
+  createClient(state);
+};
 
-function createClient(state) {
-  vsInterface.InsertUserToken().then(userToken => {
-    console.log(userToken);
-    state.userToken = userToken || '';
-    state.client = new TrelloClient(state.appKey, userToken);
-    displayLoggedIn('Trello logged in');
+function createClient(state: State) {
+  ide.PromptUserToken().then(userToken => {
+    if (userToken) {
+      ide.setUserToken(userToken);
+      state.trello = new TrelloClient(ide.getApiKey(), userToken);
+      displayLoggedIn('Trello logged in');
+    } else {
+      ide.ShowError('No User Token')
+    }
   });
 }
 
 function displayLoggedIn(loggedIn: string) {
-  vsInterface.AddToBar(loggedIn, '', '', '', '$(person)');
+  ide.AddToBar(loggedIn, '', '', '', '$(person)');
 }

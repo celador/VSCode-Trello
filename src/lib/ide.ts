@@ -11,6 +11,15 @@ export var currentList: string;
 export var currentBoard: string;
 export var statusBarItem: vscode.StatusBarItem;
 
+export const getApiKey: () => string | undefined = () =>
+  vscode.workspace.getConfiguration('TrelloCode').get('apiKey');
+
+export const getUserToken: () => string | undefined = () =>
+  vscode.workspace.getConfiguration('TrelloCode').get('userToken');
+
+export const setUserToken: (token: string) => Thenable<void> = token =>
+  vscode.workspace.getConfiguration('TrelloCode').update('userToken', token);
+
 export function displayCardOnBottom(displayString: string) {
   AddToBar('', '', '', displayString, '$(file-text)');
 }
@@ -39,8 +48,8 @@ export function ShowBoards(
 }
 
 export function ShowLists(
-  lists: Array<string>,
-  listsID: Array<string>
+  lists: string[],
+  listsID: string[]
 ): Thenable<string> {
   return vscode.window.showQuickPick(lists).then(
     x => {
@@ -49,18 +58,15 @@ export function ShowLists(
       for (var j = 0; j < lists.length; j++) {
         if (lists[j] === x) {
           currentLID = listsID[j];
-          console.log(currentLID);
         }
       }
       return currentLID;
-
-      //this.getAllCards(this.lID);
     },
     err => {}
   );
 }
 
-export function ShowCards(cards: Array<string>, cardsID: Array<string>) {
+export function ShowCards(cards: string[], cardsID: string[]) {
   return vscode.window.showQuickPick(cards).then(
     x => {
       console.log('console display:' + x);
@@ -116,21 +122,18 @@ export function AddStatusIcon(iconName: string) {
   }
 }
 
-export function InsertUserToken() {
+const showTokenError = () =>
+  vscode.window.showErrorMessage(
+    'You need to add the token provided by Trello'
+  );
+
+export function PromptUserToken() {
   return vscode.window
     .showInputBox({
-      placeHolder: "Please paste in your user token, then hit 'Enter'."
+      placeHolder: "Please paste in your user token, then hit 'Enter'.",
+      ignoreFocusOut: true
     })
-    .then(
-      x => {
-        if (!x) {
-          return vscode.window.showErrorMessage('need to paste your token in');
-        } else {
-          return x;
-        }
-      },
-      err => {}
-    );
+    .then(x => (!x ? showTokenError() : x), console.error);
 }
 
 export function ShowError(errMessage: string) {
