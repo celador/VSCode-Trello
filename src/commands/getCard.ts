@@ -1,32 +1,31 @@
-import * as ide from '../lib/ide';
-import State from '../lib/state';
+import Client from '../app/client';
 
-export default ({ trello }: State) =>
+export default (client: Client) =>
   function() {
-    const userToken = ide.getUserToken();
+    const { code } = client;
+    const userToken = code.getUserToken();
     if (!userToken) {
-      ide.ShowError(
+      code.ShowError(
         "You are not LoggedIn. Use 'Trello: Login' command to Login."
       );
-    } else if (trello) {
-      trello
+    } else {
+      client
         .getMyBoards()
-        .then(() => ide.ShowBoards(trello.boards, trello.boardsIDs))
+        .then(() => code.ShowBoards(client.boards, client.boardsIDs))
         .then(selectedBoard => {
-          trello.currentBID = selectedBoard;
-          return trello.getBoardLists(selectedBoard);
+          client.currentBID = selectedBoard;
+          return client.getBoardLists(selectedBoard);
         })
-        .then(() => ide.ShowLists(trello.lists, trello.listsIDs))
+        .then(() => code.ShowLists(client.lists, client.listsIDs))
         .then(selectedList => {
-          trello.currentLID = selectedList;
-          return trello.getAllCards(selectedList);
+          client.currentLID = selectedList;
+          return client.getAllCards(selectedList);
         })
-        .then(() => ide.ShowCards(trello.cards, trello.cardsIDs))
+        .then(() => code.ShowCards(client.cards, client.cardsIDs))
         .then(selectedCard => {
-          trello.setCurCardID(selectedCard || '');
-          ide.displayCardOnBottom(selectedCard || '');
-          // return true;
+          client.setCurCardID(selectedCard || '');
+          code.displayCardOnBottom(selectedCard || '');
         })
-        .catch(console.error);
+        .catch(code.ShowError);
     }
   };

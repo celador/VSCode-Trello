@@ -37,13 +37,10 @@
   ],
   "main": "./out/extension",
   "contributes": {
-    "commands": [{
+    "commands": [
+      {
         "command": "TrelloCode.moveCardToNewList",
         "title": "Trello: Move Current Card to New List"
-      },
-      {
-        "command": "TrelloCode.loginToTrello",
-        "title": "Trello: Login"
       },
       {
         "command": "TrelloCode.getAllBoards",
@@ -59,12 +56,12 @@
       "title": "TrelloCode configuration",
       "properties": {
         "TrelloCode.apiKey": {
-          "type": ["string", "null"],
+          "type": "string",
           "default": null,
           "description": "Your Trello API key from https://trello.com/app-key"
         },
         "TrelloCode.userToken": {
-          "type": ["string", "null"],
+          "type": "string",
           "default": null,
           "description": "The User Token returned when logging into Trello"
         }
@@ -79,16 +76,17 @@
     "test": "npm run compile && node ./node_modules/vscode/bin/test"
   },
   "devDependencies": {
-    "typescript": "^2.6.1",
-    "vscode": "^1.1.6",
-    "tslint": "^5.8.0",
-    "@types/node": "^7.0.43",
     "@types/mocha": "^2.2.42",
-    "@types/open": "0.0.29"
+    "@types/node": "^7.0.43",
+    "@types/open": "0.0.29",
+    "tslint": "^5.8.0",
+    "typescript": "^2.6.1",
+    "vscode": "^1.1.6"
   },
   "dependencies": {
     "node-trello": "^1.3.0",
     "open": "0.0.5",
+    "ramda": "^0.25.0",
     "trello": "^0.9.0"
   }
 }
